@@ -1,0 +1,11 @@
+# Server-Icon map. Uses icons in /plugins/BungeeIcons/icons/
+# You can also directly specify the Base64-Data of the icon
+icons:
+  # Specifies the icon "pvp.png" to be used for pvp.md-5.net
+  pvp.md-5.net: "pvp.png"
+
+# Whether to ignore ports in the host address. If set to false, you have to specify the ports above.
+ignorePort: true
+
+# Placeholder to use an empty icon (Can be used instead of the file name)
+emptyPlaceholder: "%empty%"

@@ -1,0 +1,4 @@
+name: BungeeIcons
+main: org.inventivetalent.bungeeicons.BungeeIcons
+author: inventivetalent
+version: ${project.version}
