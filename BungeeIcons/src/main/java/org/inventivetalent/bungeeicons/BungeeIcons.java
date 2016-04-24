@@ -111,6 +111,7 @@ public class BungeeIcons extends Plugin implements Listener {
 	@EventHandler
 	public void on(ProxyPingEvent event) {
 		InetSocketAddress address = event.getConnection().getVirtualHost();
+		if (address == null) { return; }
 		String host = ignorePort ? address.getHostName() : address.toString();
 		if (iconMap.containsKey(host)) {
 			Favicon favicon = iconMap.get(host);
