@@ -32,6 +32,7 @@ public class BungeeIcons extends Plugin implements Listener {
 	File          iconDirectory;
 	Map<String, Favicon> iconMap          = new HashMap<>();
 	boolean              ignorePort       = true;
+	boolean ignoreCase=true;
 	String               emptyPlaceholder = "%empty%";
 
 	@Override
@@ -78,6 +79,7 @@ public class BungeeIcons extends Plugin implements Listener {
 			throw new RuntimeException("Could not load config", e);
 		}
 		ignorePort = config.getBoolean("ignorePort");
+		ignoreCase = config.getBoolean("ignoreCase", false);
 		emptyPlaceholder = config.getString("emptyPlaceholder");
 
 		iconMap.clear();
@@ -113,6 +115,7 @@ public class BungeeIcons extends Plugin implements Listener {
 		InetSocketAddress address = event.getConnection().getVirtualHost();
 		if (address == null) { return; }
 		String host = ignorePort ? address.getHostName() : address.toString();
+		if (ignoreCase) { host = host.toLowerCase(); }
 		if (iconMap.containsKey(host)) {
 			Favicon favicon = iconMap.get(host);
 			event.getResponse().setFavicon(favicon);

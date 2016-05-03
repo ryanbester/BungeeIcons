@@ -7,5 +7,8 @@ icons:
 # Whether to ignore ports in the host address. If set to false, you have to specify the ports above.
 ignorePort: true
 
+# Whether to ignore case in the address (addresses have to be specified in lower-case above)
+ignoreCase: true
+
 # Placeholder to use an empty icon (Can be used instead of the file name)
 emptyPlaceholder: "%empty%"
