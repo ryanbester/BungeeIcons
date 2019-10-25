@@ -15,6 +15,7 @@ import net.md_5.bungee.event.EventHandler;
 
 import javax.imageio.ImageIO;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,12 +72,22 @@ public class BungeeIcons extends Plugin implements Listener {
 
 		iconMap.clear();
 		Configuration iconSection = config.getSection("icons");
+		Map<String, String> icons = new HashMap<>();
+		try {
+			Field selfField = Configuration.class.getDeclaredField("self");
+			selfField.setAccessible(true);
+			icons = (Map<String, String>) selfField.get(iconSection);
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+
 		if (iconSection != null) {
 			Collection<String> keys = iconSection.getKeys();
 			getLogger().info("Loading " + keys.size() + " icons...");
-			for (String key : keys) {
-				String value = iconSection.getString(key);
-				getLogger().fine("Loading " + key + " : " + value);
+			for (Map.Entry<String, String> entry : icons.entrySet()) {
+				String key = entry.getKey();
+				String value = entry.getValue();
+				getLogger().info("Loading " + key + " : " + value);
 
 				if (emptyPlaceholder.equals(value)) {
 					iconMap.put(key, null);
