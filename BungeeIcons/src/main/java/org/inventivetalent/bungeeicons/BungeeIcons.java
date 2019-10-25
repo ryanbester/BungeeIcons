@@ -12,11 +12,11 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.util.CaseInsensitiveMap;
 
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -27,11 +27,11 @@ public class BungeeIcons extends Plugin implements Listener {
 	// http://stackoverflow.com/questions/475074/regex-to-parse-or-validate-base64-data/475217#475217
 	public static final Pattern BASE64_PATTERN = Pattern.compile("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$");
 
-	Configuration config;
-	File          iconDirectory;
+	Configuration        config;
+	File                 iconDirectory;
 	Map<String, Favicon> iconMap          = new HashMap<>();
 	boolean              ignorePort       = true;
-	boolean ignoreCase=true;
+	boolean              ignoreCase       = true;
 	String               emptyPlaceholder = "%empty%";
 
 	@Override
@@ -70,31 +70,34 @@ public class BungeeIcons extends Plugin implements Listener {
 		emptyPlaceholder = config.getString("emptyPlaceholder");
 
 		iconMap.clear();
-		Map<String, String> icons = new CaseInsensitiveMap<>((Map) config.get("icons", new HashMap<>()));
-		getLogger().info("Loading " + icons.size() + " icons...");
-		for (Map.Entry<String, String> entry : icons.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-			getLogger().fine("Loading " + key + " : " + value);
+		Configuration iconSection = config.getSection("icons");
+		if (iconSection != null) {
+			Collection<String> keys = iconSection.getKeys();
+			getLogger().info("Loading " + keys.size() + " icons...");
+			for (String key : keys) {
+				String value = iconSection.getString(key);
+				getLogger().fine("Loading " + key + " : " + value);
 
-			if (emptyPlaceholder.equals(value)) {
-				iconMap.put(key, null);
-			}
-
-			File iconFile = new File(iconDirectory, value);
-			if (iconFile.exists()) {
-				try {
-					iconMap.put(key, Favicon.create(ImageIO.read(iconFile)));
-				} catch (IOException e) {
-					getLogger().log(Level.WARNING, "Failed to read image " + iconFile, e);
+				if (emptyPlaceholder.equals(value)) {
+					iconMap.put(key, null);
 				}
-			} else if (BASE64_PATTERN.matcher(value).matches()) {
-				iconMap.put(key, Favicon.create(value));
-			} else {
-				getLogger().warning("File '" + value + "' not found in /BungeeIcons/icons and it does not appear to be a Base64-String.");
+
+				File iconFile = new File(iconDirectory, value);
+				if (iconFile.exists()) {
+					try {
+						iconMap.put(key, Favicon.create(ImageIO.read(iconFile)));
+					} catch (IOException e) {
+						getLogger().log(Level.WARNING, "Failed to read image " + iconFile, e);
+					}
+				} else if (BASE64_PATTERN.matcher(value).matches()) {
+					iconMap.put(key, Favicon.create(value));
+				} else {
+					getLogger().warning("File '" + value + "' not found in /BungeeIcons/icons and it does not appear to be a Base64-String.");
+				}
 			}
+			getLogger().info("Loaded " + iconMap.size() + " icons.");
 		}
-		getLogger().info("Loaded " + iconMap.size() + " icons.");
+
 	}
 
 	@EventHandler
