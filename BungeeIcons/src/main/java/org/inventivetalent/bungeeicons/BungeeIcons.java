@@ -13,7 +13,6 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.util.CaseInsensitiveMap;
-import org.mcstats.MetricsLite;
 
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -58,18 +57,6 @@ public class BungeeIcons extends Plugin implements Listener {
 			}
 		});
 
-		getProxy().getScheduler().runAsync(this, new Runnable() {
-			@Override
-			public void run() {
-				try {
-					MetricsLite metrics = new MetricsLite(BungeeIcons.this);
-					if (metrics.start()) {
-						getLogger().info("Metrics started");
-					}
-				} catch (Exception e) {
-				}
-			}
-		});
 	}
 
 	void reloadIcons() {
