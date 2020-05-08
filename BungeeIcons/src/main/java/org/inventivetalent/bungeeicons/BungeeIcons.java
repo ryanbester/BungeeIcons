@@ -93,7 +93,15 @@ public class BungeeIcons extends Plugin implements Listener {
 					iconMap.put(key, null);
 				}
 
-				File iconFile = new File(iconDirectory, value);
+				File iconFile;
+				
+				if(value.startsWith("/")) {
+					// Absolute path
+					iconFile = new File(value);
+				} else {
+					iconFile = new File(iconDirectory, value);
+				}
+				
 				if (iconFile.exists()) {
 					try {
 						iconMap.put(key, Favicon.create(ImageIO.read(iconFile)));
@@ -102,6 +110,8 @@ public class BungeeIcons extends Plugin implements Listener {
 					}
 				} else if (BASE64_PATTERN.matcher(value).matches()) {
 					iconMap.put(key, Favicon.create(value));
+				} else if (value.startsWith("/")) {
+					getLogger().warning("File '" + value + "' not found and it does not appear to be a Base64-String.");
 				} else {
 					getLogger().warning("File '" + value + "' not found in /BungeeIcons/icons and it does not appear to be a Base64-String.");
 				}
@@ -120,6 +130,17 @@ public class BungeeIcons extends Plugin implements Listener {
 		if (iconMap.containsKey(host)) {
 			Favicon favicon = iconMap.get(host);
 			event.getResponse().setFavicon(favicon);
+		}
+		
+		/** Wildcard matching **/
+		for(Map.Entry<String, Favicon> entry : iconMap.entrySet()) {
+			if(entry.getKey().startsWith("*")) {
+				String newKey = entry.getKey().substring(2);
+				if(host.endsWith(newKey)) {
+					Favicon favicon = entry.getValue();
+					event.getResponse().setFavicon(favicon);
+				}
+			}
 		}
 	}
 
